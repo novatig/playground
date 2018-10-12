@@ -267,6 +267,12 @@ export function forwardProp(network: Node[][], inputs: number[]): number {
     for (let i = 0; i < currentLayer.length; i++) {
       let node = currentLayer[i];
       node.updateOutput();
+      if ( layerIdx > 1 ) {
+      if ( currentLayer.length < network[layerIdx-1].length +1 ) {
+        let prev = node.inputLinks[i];
+        node.output = prev.source.output + node.output
+      }
+      }
     }
   }
   return network[network.length - 1][0].output;
@@ -323,6 +329,9 @@ export function backProp(network: Node[][], target: number,
       for (let j = 0; j < node.outputs.length; j++) {
         let output = node.outputs[j];
         node.outputDer += output.weight * output.dest.inputDer;
+        if (j == i) {
+           node.outputDer += output.dest.outputDer;
+        }
       }
     }
   }
